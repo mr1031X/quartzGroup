@@ -39,7 +39,7 @@ export default function Navigation() {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-3"
+          className="flex items-center"
           onClick={(e) => {
             if (isHomePage) {
               e.preventDefault();
@@ -47,20 +47,15 @@ export default function Navigation() {
             }
           }}
         >
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
-            <picture>
-              <source srcSet="/assets/quartz-logo.webp" type="image/webp" />
-              <img
-                src="/assets/quartz-logo.png"
-                alt="Quartz Group"
-                className="w-full h-full object-contain"
-                width="40"
-                height="40"
-                fetchPriority="high"
-                decoding="async"
-              />
-            </picture>
-          </div>
+          <img
+            src="/assets/quartz-group-logo.png"
+            alt="Quartz Group"
+            className="h-10 w-auto object-contain"
+            width="417"
+            height="73"
+            fetchPriority="high"
+            decoding="async"
+          />
         </Link>
 
         {/* Desktop Nav */}

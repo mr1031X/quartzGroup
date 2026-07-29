@@ -1,122 +1,60 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, User, Search } from 'lucide-react';
+import { sanityClient, urlFor, type BlogPost } from '@/lib/sanity';
 
-interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  category: string;
-  readTime: string;
-}
-
-const allPosts: BlogPost[] = [
-  {
-    slug: 'quartz-group-xemelgo-new-era',
-    title: 'Quartz Group + Xemelgo: A New Era for Epicor Users',
-    excerpt:
-      'Quartz Group partners with Xemelgo to bring real-time RFID visibility directly into Epicor ERP workflows for manufacturers and distributors. This partnership marks a significant step forward for businesses looking to modernize their operations with cutting-edge tracking technology.',
-    author: 'Chris Smalley',
-    date: 'Feb 25, 2026',
-    category: 'RFID',
-    readTime: '5 min read',
-  },
-  {
-    slug: 'visibility-is-a-choice',
-    title: 'Visibility Is a Choice: Why Real-Time RFID Matters Now',
-    excerpt:
-      "In today's fast-moving manufacturing environment, inventory visibility is not a luxury—it is a competitive necessity. Real-time RFID tracking gives businesses the edge they need to compete effectively.",
-    author: 'Chris Smalley',
-    date: 'Apr 30, 2026',
-    category: 'RFID',
-    readTime: '4 min read',
-  },
-  {
-    slug: 'bridging-rfid-erp-gap',
-    title: 'Bridging the Gap Between RFID Data and ERP Execution',
-    excerpt:
-      'RFID generates massive amounts of data. The real challenge is turning that data into actionable ERP workflows that improve operations and drive measurable business results.',
-    author: 'Chris Smalley',
-    date: 'May 5, 2026',
-    category: 'Epicor',
-    readTime: '6 min read',
-  },
-  {
-    slug: 'walmart-rfid-supply-chain',
-    title: 'Walmart Will Use RFID for Inventory and Supply Chain Management',
-    excerpt:
-      'Major retailers like Walmart are mandating RFID for suppliers. What does this mean for manufacturers using Epicor, and how can you prepare for this shift?',
-    author: 'Chris Smalley',
-    date: 'Mar 15, 2026',
-    category: 'RFID',
-    readTime: '5 min read',
-  },
-  {
-    slug: 'rfid-field-service-inventory',
-    title: 'RFID for Field Service Inventory',
-    excerpt:
-      'Field service operations face unique inventory challenges. RFID technology provides a practical solution for tracking parts, tools, and equipment in real time.',
-    author: 'Chris Smalley',
-    date: 'Mar 1, 2026',
-    category: 'RFID',
-    readTime: '4 min read',
-  },
-  {
-    slug: 'inventory-lost-at-sea',
-    title: 'Inventory — Lost at Sea',
-    excerpt:
-      'Without proper tracking systems, inventory can feel like it is lost at sea. Learn how modern visibility solutions can bring clarity to your operations.',
-    author: 'Chris Smalley',
-    date: 'Feb 10, 2026',
-    category: 'Manufacturing Operations',
-    readTime: '3 min read',
-  },
-  {
-    slug: 'what-is-your-rfid-goal',
-    title: 'What Is Your RFID Goal?',
-    excerpt:
-      'Before implementing RFID, it is essential to define your goals clearly. This guide helps you identify the right RFID strategy for your business needs.',
-    author: 'Chris Smalley',
-    date: 'Jan 20, 2026',
-    category: 'RFID',
-    readTime: '4 min read',
-  },
-  {
-    slug: 'tickets-please',
-    title: 'Tickets, Please!',
-    excerpt:
-      'A look at how proper tracking and validation systems can transform manufacturing workflows, from receiving to shipping.',
-    author: 'Chris Smalley',
-    date: 'Jan 5, 2026',
-    category: 'Manufacturing Operations',
-    readTime: '3 min read',
-  },
-];
-
-const categories = [
-  'All',
-  'Epicor',
-  'RFID',
-  'ERP Implementation',
-  'Application Support',
-  'EDI',
-  'Product Configuration',
-  'Manufacturing Operations',
-  'Distribution',
-];
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredPosts = allPosts.filter((post) => {
-    const matchesCategory = activeCategory === 'All' || post.category === activeCategory;
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const query = `*[_type == "post"] | order(publishedAt desc) {
+          _id,
+          title,
+          slug,
+          excerpt,
+          publishedAt,
+          author->{name, slug, image},
+          mainImage,
+          categories
+        }`;
+        const result = await sanityClient.fetch<BlogPost[]>(query);
+        setPosts(result);
+      } catch {
+        setError('Failed to load blog posts. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const categories = useMemo(() => {
+    const allCategories = posts.flatMap((post) => post.categories || []);
+    const unique = Array.from(new Set(allCategories)).sort();
+    return ['All', ...unique];
+  }, [posts]);
+
+  const filteredPosts = posts.filter((post) => {
+    const matchesCategory = activeCategory === 'All' || (post.categories || []).includes(activeCategory);
     const matchesSearch =
       searchQuery === '' ||
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+      (post.excerpt || '').toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -183,7 +121,21 @@ export default function BlogPage() {
       {/* Blog Grid */}
       <section className="py-16">
         <div className="container-custom">
-          {filteredPosts.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-[var(--text-secondary)] text-lg">Loading posts...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p className="text-red-400 mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-[var(--accent-teal)] hover:underline"
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredPosts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-[var(--text-secondary)] text-lg">
                 No articles found matching your criteria.
@@ -202,35 +154,45 @@ export default function BlogPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts.map((post, index) => (
                 <Link
-                  key={post.slug}
-                  to={`/blog/${post.slug}`}
+                  key={post._id}
+                  to={`/blog/${post.slug.current}`}
                   className="group bg-[var(--bg-surface)] rounded-2xl border border-white/5 overflow-hidden hover:border-[var(--accent-teal)]/30 transition-all duration-300"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="h-48 bg-gradient-to-br from-[var(--bg-void)] to-[var(--bg-surface)] flex items-center justify-center relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-20">
-                      <div
-                        className="w-full h-full"
-                        style={{
-                          backgroundImage: `radial-gradient(circle at ${30 + (index % 3) * 20}% ${40 + (index % 2) * 10}%, var(--accent-teal) 0%, transparent 50%)`,
-                        }}
+                    {post.mainImage ? (
+                      <img
+                        src={urlFor(post.mainImage).width(600).url()}
+                        alt={post.mainImage.alt || post.title}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
                       />
-                    </div>
-                    <span className="font-mono text-[var(--accent-teal)] text-xs uppercase tracking-wider relative z-10 bg-[var(--bg-void)]/60 px-3 py-1 rounded-full">
-                      {post.category}
-                    </span>
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 opacity-20">
+                          <div
+                            className="w-full h-full"
+                            style={{
+                              backgroundImage: `radial-gradient(circle at ${30 + (index % 3) * 20}% ${40 + (index % 2) * 10}%, var(--accent-teal) 0%, transparent 50%)`,
+                            }}
+                          />
+                        </div>
+                        <span className="font-mono text-[var(--accent-teal)] text-xs uppercase tracking-wider relative z-10 bg-[var(--bg-void)]/60 px-3 py-1 rounded-full">
+                          {(post.categories || [])[0] || 'Article'}
+                        </span>
+                      </>
+                    )}
                   </div>
                   <div className="p-6">
                     <div className="flex items-center gap-4 text-[var(--text-secondary)] text-xs mb-3">
                       <span className="flex items-center gap-1">
                         <Calendar size={12} />
-                        {post.date}
+                        {formatDate(post.publishedAt)}
                       </span>
                       <span className="flex items-center gap-1">
                         <User size={12} />
-                        {post.author}
+                        {post.author?.name || 'Quartz Group'}
                       </span>
-                      <span>{post.readTime}</span>
                     </div>
                     <h3 className="text-white font-semibold mb-2 group-hover:text-[var(--accent-teal)] transition-colors leading-snug">
                       {post.title}

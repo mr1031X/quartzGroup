@@ -1,73 +1,136 @@
-# React + TypeScript + Vite
+# Quartz Group
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript + Vite marketing site for Quartz Group — an Epicor + RFID consultancy. Features a landing page, contact form with HubSpot integration, and a blog powered by Sanity.io.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend:** React 19, TypeScript, Tailwind CSS, shadcn/ui
+- **Routing:** React Router
+- **CMS:** Sanity.io
+- **Forms:** HubSpot Forms API
+- **Build Tool:** Vite
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started (Local Development)
 
-## Expanding the ESLint configuration
+### 1. Clone & Install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone <repo-url>
+cd app
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Start the Vite Dev Server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run dev
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+The site will be available at **http://localhost:5173**
+
+### 3. Build for Production
+
+```bash
+npm run build
+```
+
+Output goes to the `dist/` directory.
+
+---
+
+## Sanity Studio
+
+The blog content is managed through Sanity Studio, which runs as a separate app in the `studio/` directory.
+
+### 1. Install Studio Dependencies
+
+```bash
+cd studio
+npm install
+```
+
+### 2. Configure Your Project ID
+
+Make sure `studio/sanity.config.ts` and `studio/sanity.cli.ts` contain your actual Sanity project ID:
+
+```ts
+projectId: 'your-project-id',
+dataset: 'production',
+```
+
+If you haven't created a Sanity project yet, run the interactive init:
+
+```bash
+cd studio
+npx sanity@latest init
+```
+
+### 3. Start Sanity Studio
+
+```bash
+cd studio
+npm run dev
+```
+
+Studio will be available at **http://localhost:3333**
+
+### 4. Sanity Schemas
+
+The studio includes two document types:
+
+- **Post** — Blog posts with title, slug, author, main image, categories, excerpt, and rich text body
+- **Author** — Authors with name, slug, image, and bio
+
+### 5. Deploy Sanity Studio
+
+```bash
+cd studio
+npm run deploy
+```
+
+This deploys the Studio to `https://quartztrack.sanity.studio` (configured via `studioHost` in `sanity.cli.ts`).
+
+### 6. Add CORS Origin
+
+For the frontend to fetch data from Sanity, add your dev server as an allowed origin:
+
+**Via CLI:**
+```bash
+cd studio
+npx sanity login
+npx sanity cors add http://localhost:5173 --credentials
+```
+
+**Via Web UI:**
+1. Go to [https://sanity.io/manage](https://sanity.io/manage)
+2. Select your project → **API → CORS origins**
+3. Add `http://localhost:5173` with **Allow credentials** checked
+
+---
+
+## Environment Notes
+
+- The Sanity project ID is hardcoded in `src/lib/sanity.ts` and `studio/sanity.config.ts`. The project ID is public and safe to commit.
+- The HubSpot portal ID and form GUID are hardcoded in `src/pages/Contact.tsx`.
+- No environment variables are required for basic operation.
+
+---
+
+## Project Structure
+
+```
+├── src/
+│   ├── components/       # shadcn/ui components + shared layout
+│   ├── pages/            # Route pages (Home, Contact, Blog, BlogPost, Author)
+│   ├── lib/              # Utils + Sanity client
+│   ├── App.tsx           # Router setup
+│   └── main.tsx          # Entry point
+├── studio/               # Sanity Studio
+│   ├── schemas/          # Post & Author schemas
+│   ├── sanity.config.ts  # Studio config
+│   └── sanity.cli.ts     # CLI config
+├── public/               # Static assets
+└── dist/                 # Build output
 ```

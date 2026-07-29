@@ -104,9 +104,13 @@ export default function Contact() {
                   </p>
                   <a
                     href="tel:1-800-449-3155"
-                    className="text-white hover:text-[var(--accent-teal)] transition-colors"
+                    className="text-white hover:text-[var(--accent-teal)] transition-colors inline-flex items-center"
                   >
-                    1-800-449-3155
+                    <img
+                      src="/assets/phone-number.png"
+                      alt="1-800-449-3155"
+                      className="h-5 w-auto"
+                    />
                   </a>
                 </div>
               </div>
@@ -121,9 +125,13 @@ export default function Contact() {
                   </p>
                   <a
                     href="mailto:info@thequartzgroup.com"
-                    className="text-white hover:text-[var(--accent-teal)] transition-colors"
+                    className="text-white hover:text-[var(--accent-teal)] transition-colors inline-flex items-center"
                   >
-                    info@thequartzgroup.com
+                    <img
+                      src="/assets/email-address.png"
+                      alt="info@thequartzgroup.com"
+                      className="h-5 w-auto"
+                    />
                   </a>
                 </div>
               </div>

@@ -68,7 +68,12 @@ export default function Hero() {
 
         <p className="text-white/40 text-sm mt-8">
           <Phone size={14} className="inline mr-1 -mt-0.5" />
-          1-800-449-3155 &nbsp;|&nbsp; Epicor Kinetic &amp; Prophet 21 Experts
+          <img
+            src="/assets/phone-number.png"
+            alt="Phone"
+            className="inline h-4 w-auto opacity-40 align-middle"
+          />
+          &nbsp;|&nbsp; Epicor Kinetic &amp; RFID Experts
         </p>
       </div>
 

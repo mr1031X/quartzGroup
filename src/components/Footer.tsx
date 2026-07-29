@@ -57,7 +57,7 @@ export default function Footer() {
           <div className="flex flex-wrap gap-4 mt-8">
             <a href="tel:1-800-449-3155" className="btn-primary">
               <Phone size={16} className="mr-2" />
-              Call 1-800-449-3155
+              Call <img src="/assets/phone-number.png" alt="1-800-449-3155" className="inline h-4 w-auto ml-1" />
             </a>
             <a href="/#contact" onClick={(e) => handleNavClick(e, '/#contact')} className="btn-outline">
               Send a Message
@@ -69,11 +69,14 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-full bg-[var(--accent-teal)] flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Q</span>
-              </div>
-              <span className="text-white font-semibold">Quartz Group</span>
+            <Link to="/" className="flex items-center mb-4">
+              <img
+                src="/assets/quartz-group-logo.png"
+                alt="Quartz Group"
+                className="h-9 w-auto object-contain"
+                width="417"
+                height="73"
+              />
             </Link>
             <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-4">
               Your Epicor Partner. Customized solutions that actually work for manufacturers and
@@ -186,7 +189,7 @@ export default function Footer() {
             </Link>
             <a href="mailto:info@thequartzgroup.com" className="text-[var(--text-secondary)] text-xs hover:text-white transition-colors flex items-center gap-1">
               <Mail size={12} />
-              info@thequartzgroup.com
+              <img src="/assets/email-address.png" alt="info@thequartzgroup.com" className="h-3.5 w-auto opacity-60 hover:opacity-100 transition-opacity" />
             </a>
           </div>
         </div>

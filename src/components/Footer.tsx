@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, Linkedin, Twitter, Facebook } from 'lucide-react';
+import { Phone, Linkedin, Twitter, Facebook } from 'lucide-react';
 
 const serviceLinks = [
   { label: 'Implementation', href: '/#services' },
@@ -55,10 +55,11 @@ export default function Footer() {
             Let&apos;s discuss how Quartz Group can help you get more from your Epicor investment.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
-            <a href="tel:1-800-449-3155" className="btn-primary">
+
+            <span className="btn-primary">
               <Phone size={16} className="mr-2" />
               Call <img src="/assets/phone-number.png" alt="1-800-449-3155" className="inline h-4 w-auto ml-1" />
-            </a>
+            </span>
             <a href="/#contact" onClick={(e) => handleNavClick(e, '/#contact')} className="btn-outline">
               Send a Message
             </a>
@@ -187,10 +188,19 @@ export default function Footer() {
             >
               Privacy Policy
             </Link>
-            <a href="mailto:info@thequartzgroup.com" className="text-[var(--text-secondary)] text-xs hover:text-white transition-colors flex items-center gap-1">
-              <Mail size={12} />
-              <img src="/assets/email-address.png" alt="info@thequartzgroup.com" className="h-3.5 w-auto opacity-60 hover:opacity-100 transition-opacity" />
+            <a
+              href="https://haloblossom.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--text-secondary)] text-xs hover:text-white transition-colors"
+            >
+              Designed by Halo Blossom
             </a>
+            <img src="/assets/email-address.png" alt="info@thequartzgroup.com" className="h-6 w-auto opacity-60 hover:opacity-100 transition-opacity" />
+            {/* <a href="mailto:info@thequartzgroup.com" className="text-[var(--text-secondary)] text-xs hover:text-white transition-colors flex items-center gap-1">
+              <Mail size={12} />
+              <img src="/assets/email-address.png" alt="info@thequartzgroup.com" className="h-6 w-auto opacity-60 hover:opacity-100 transition-opacity" />
+            </a> */}
           </div>
         </div>
       </div>

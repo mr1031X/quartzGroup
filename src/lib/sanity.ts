@@ -12,7 +12,7 @@ const SANITY_DATASET = 'production';
 export const sanityClient = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
-  useCdn: true,
+  useCdn: false, // use live API so newly published posts appear immediately on Vercel
   apiVersion: '2024-05-15',
 });
 

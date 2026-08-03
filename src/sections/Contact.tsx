@@ -1,15 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Phone, Mail, MapPin, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
-const interestOptions = [
-  'Epicor Implementation',
-  'Application Support',
-  'EDI',
-  'Product Configuration',
-  'Project Management',
-  'RFID',
-  'General Inquiry',
-];
+const HUBSPOT_PORTAL_ID = '245306799';
+const HUBSPOT_FORM_GUID = '621a61bc-abb7-45f5-bf8a-da7c9901b8c9';
 
 export default function Contact() {
   const [formState, setFormState] = useState({
@@ -18,10 +11,9 @@ export default function Contact() {
     lastName: '',
     email: '',
     phone: '',
-    interest: '',
     message: '',
   });
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
@@ -38,28 +30,62 @@ export default function Contact() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Simulate form submission
-    setStatus('success');
-    setTimeout(() => {
-      setFormState({
-        company: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        interest: '',
-        message: '',
-      });
-      setStatus('idle');
-    }, 5000);
+    setStatus('loading');
+
+    const payload = {
+      fields: [
+        { name: 'company', value: formState.company },
+        { name: 'firstname', value: formState.firstName },
+        { name: 'lastname', value: formState.lastName },
+        { name: 'email', value: formState.email },
+        { name: 'phone', value: formState.phone },
+        { name: 'message', value: formState.message },
+      ],
+      context: {
+        pageUri: window.location.href,
+        pageName: document.title,
+      },
+    };
+
+    try {
+      const response = await fetch(
+        `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.ok) {
+        setStatus('success');
+        setTimeout(() => {
+          setFormState({
+            company: '',
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            message: '',
+          });
+          setStatus('idle');
+        }, 5000);
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
@@ -102,7 +128,12 @@ export default function Contact() {
                   <p className="text-[var(--text-secondary)] text-xs uppercase tracking-wider">
                     Phone
                   </p>
-                  <a
+                    <img
+                      src="/assets/phone-number.png"
+                      alt="1-800-449-3155"
+                      className="h-5 w-auto"
+                    />
+                  {/* <a
                     href="tel:1-800-449-3155"
                     className="text-white hover:text-[var(--accent-teal)] transition-colors inline-flex items-center"
                   >
@@ -111,7 +142,7 @@ export default function Contact() {
                       alt="1-800-449-3155"
                       className="h-5 w-auto"
                     />
-                  </a>
+                  </a> */}
                 </div>
               </div>
 
@@ -123,16 +154,21 @@ export default function Contact() {
                   <p className="text-[var(--text-secondary)] text-xs uppercase tracking-wider">
                     Email
                   </p>
-                  <a
+                    <img
+                      src="/assets/email-address.png"
+                      alt="info@thequartzgroup.com"
+                      className="h-6 w-auto"
+                    />
+                  {/* <a
                     href="mailto:info@thequartzgroup.com"
                     className="text-white hover:text-[var(--accent-teal)] transition-colors inline-flex items-center"
                   >
                     <img
                       src="/assets/email-address.png"
                       alt="info@thequartzgroup.com"
-                      className="h-5 w-auto"
+                      className="h-6 w-auto"
                     />
-                  </a>
+                  // </a> */}
                 </div>
               </div>
 
@@ -175,38 +211,18 @@ export default function Contact() {
                 next step.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-2 block">
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formState.company}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-void)] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-[var(--accent-teal)] focus:outline-none transition-colors"
-                    placeholder="Your company"
-                  />
-                </div>
-                <div>
-                  <label className="text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-2 block">
-                    Area of Interest *
-                  </label>
-                  <select
-                    name="interest"
-                    value={formState.interest}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-void)] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-[var(--accent-teal)] focus:outline-none transition-colors appearance-none cursor-pointer"
-                  >
-                    <option value="">Select...</option>
-                    {interestOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className="mb-4">
+                <label className="text-[var(--text-secondary)] text-xs uppercase tracking-wider mb-2 block">
+                  Company
+                </label>
+                <input
+                  type="text"
+                  name="company"
+                  value={formState.company}
+                  onChange={handleChange}
+                  className="w-full bg-[var(--bg-void)] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-[var(--accent-teal)] focus:outline-none transition-colors"
+                  placeholder="Your company"
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -304,12 +320,17 @@ export default function Contact() {
               <button
                 type="submit"
                 className="btn-primary w-full justify-center"
-                disabled={status === 'success'}
+                disabled={status === 'loading' || status === 'success'}
               >
                 {status === 'success' ? (
                   <>
                     <CheckCircle size={16} className="mr-2" />
                     Message Sent Successfully
+                  </>
+                ) : status === 'loading' ? (
+                  <>
+                    <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Sending...
                   </>
                 ) : (
                   <>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
@@ -36,6 +37,7 @@ function App() {
 
   return (
     <HashRouter>
+      <Analytics />
       <ScrollToTop />
       <div className="min-h-screen bg-[var(--bg-void)]">
         <Navigation />

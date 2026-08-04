@@ -17,7 +17,7 @@ export default function Hero() {
           playsInline
           preload="none"
           className="w-full h-full object-cover"
-          poster="/assets/hero-clean.jpg"
+          poster="/assets/hero-image.jpg"
         >
           <source src="/assets/hero-video.mp4" type="video/mp4" />
         </video>

@@ -3,9 +3,9 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TeamMember {
   name: string;
-  role: string;
-  image: string;
-  description: string;
+  role?: string;
+  image?: string;
+  description?: string;
 }
 
 const teamMembers: TeamMember[] = [
@@ -29,7 +29,7 @@ const teamMembers: TeamMember[] = [
   },
   {
     name: 'Asit Nagpal',
-    role: 'Consultant',
+    role: 'Technical Consultant',
     image: '/team/ANagpal2.png',
     description: 'Epicor Finance and Kinetic Sales Management certified. Over 30 years in software development, 10 years in Epicor Tools.',
   },
@@ -64,10 +64,9 @@ const teamMembers: TeamMember[] = [
     description: '33 years in manufacturing and manufacturing software consulting. Specializes in scheduling, job tracking, MRP, and financials.',
   },
   {
-    name: 'Don Blain',
-    role: 'Operations Consultant',
-    image: '/team/DBlaine.png',
-    description: 'Deep operational expertise in manufacturing consulting. Helps clients optimize production workflows within Epicor.',
+    name: 'David Bartosik',
+    role: 'Senior Consultant',
+    image: '/team/DBartosik.png',
   },
   {
     name: 'Don Luoto',
@@ -100,10 +99,18 @@ const teamMembers: TeamMember[] = [
     description: 'Epicor Financial certified. Over 15 years in manufacturing, quality assurance, finance and ERP software.',
   },
   {
+    name: 'Joe Brifo',
+    role: 'Senior Software Engineer',
+  },
+  {
     name: 'Ken Adams',
     role: 'Senior Application Support Specialist',
     image: '/team/KAdams.png',
     description: 'Epicor Manufacturing and Distribution certified. Over 20 years supporting ERP systems with emphasis on Inventory & Manufacturing.',
+  },
+  {
+    name: 'Kevin Eliasson',
+    role: 'Senior Consultant',
   },
   {
     name: 'Matt Hellwig',
@@ -173,34 +180,40 @@ export default function Team() {
             >
               <div className="flex items-start gap-4 bg-[var(--bg-surface)] rounded-xl p-4 border border-white/5 hover:border-[var(--accent-teal)]/25 transition-all duration-300 h-full">
                 {/* Small Portrait Photo - WebP with PNG fallback */}
-                <div className="w-[72px] h-[90px] rounded-lg overflow-hidden bg-gradient-to-b from-[var(--bg-surface)] to-[#111113] flex-shrink-0">
-                  <picture>
-                    <source srcSet={`${member.image.replace('.png', '.webp')}`} type="image/webp" />
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                      decoding="async"
-                      width="72"
-                      height="90"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
-                  </picture>
-                </div>
+                {member.image && (
+                  <div className="w-[72px] h-[90px] rounded-lg overflow-hidden bg-gradient-to-b from-[var(--bg-surface)] to-[#111113] flex-shrink-0">
+                    <picture>
+                      <source srcSet={`${member.image.replace('.png', '.webp')}`} type="image/webp" />
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                        decoding="async"
+                        width="72"
+                        height="90"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    </picture>
+                  </div>
+                )}
 
                 {/* Info */}
                 <div className="min-w-0 flex-1">
                   <h3 className="text-white font-semibold text-sm leading-tight">{member.name}</h3>
-                  <p className="text-[var(--accent-teal)] text-xs font-medium mt-0.5 mb-2 leading-tight">
-                    {member.role}
-                  </p>
-                  <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
-                    {member.description}
-                  </p>
+                  {member.role && (
+                    <p className="text-[var(--accent-teal)] text-xs font-medium mt-0.5 mb-2 leading-tight">
+                      {member.role}
+                    </p>
+                  )}
+                  {member.description && (
+                    <p className="text-[var(--text-secondary)] text-xs leading-relaxed">
+                      {member.description}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

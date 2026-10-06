@@ -75,6 +75,11 @@ const teamMembers: TeamMember[] = [
     description: 'Epicor Manufacturing and Distribution certified. Consulting on Epicor products since 1996. Supports Kinetic, Epicor 10, 9 and Vantage 8.',
   },
   {
+    name: 'Ed Atzert',
+    role: 'Senior Consultant',
+    image: '/team/EAtzert.png',
+  },
+  {
     name: 'George Esber',
     role: 'Operations Consultant',
     image: '/team/GEsber.png',

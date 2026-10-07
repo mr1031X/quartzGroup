@@ -106,6 +106,7 @@ const teamMembers: TeamMember[] = [
   {
     name: 'Joe Brifo',
     role: 'Senior Software Engineer',
+    image: '/team/JBrifo.png',
   },
   {
     name: 'Ken Adams',
